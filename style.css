@@ -16,22 +16,35 @@
     --radius-sm: 8px;
 }
 
-* {
+/* Proteção Global contra vazamento e rolagem horizontal no mobile */
+*, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.65;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 html {
     scroll-behavior: smooth;
 }
 
-body {
-    background-color: var(--bg-light);
-    color: var(--text-dark);
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
+/* Alternância de textos entre Desktop e Mobile */
+.text-desktop {
+    display: inline;
+}
+
+.text-mobile {
+    display: none;
 }
 
 /* Acessibilidade: navegação por teclado e movimento reduzido */
@@ -73,10 +86,9 @@ button:focus-visible {
     }
 }
 
-/* ==========================================================================
-   Header & Navigation
-   ========================================================================== */
+/* Header & Navigation */
 header {
+    width: 100%;
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(30, 77, 64, 0.08);
@@ -92,12 +104,14 @@ header.scrolled {
 }
 
 .nav-container {
+    width: 100%;
     max-width: 1120px;
     margin: 0 auto;
     padding: 18px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 /* Logo & CRP Badge */
@@ -164,19 +178,29 @@ header.scrolled {
     background: none;
     border: none;
     cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-sm);
 }
 
 .mobile-toggle span {
-    width: 25px;
-    height: 3px;
+    width: 24px;
+    height: 2.5px;
     background-color: var(--primary-dark);
     border-radius: 2px;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
-/* ==========================================================================
-   Hero Section
-   ========================================================================== */
+.mobile-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+.mobile-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+.mobile-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* Hero Section */
 .hero {
     padding: 90px 24px;
     max-width: 1120px;
@@ -225,7 +249,7 @@ header.scrolled {
     flex-wrap: wrap;
 }
 
-/* Card Lateral Verde (Ajuste de Alto Contraste para o CRP) */
+/* Card Lateral & Avatar Hero */
 .hero-card {
     background: linear-gradient(145deg, var(--primary) 0%, var(--primary-dark) 100%);
     border-radius: var(--radius);
@@ -234,6 +258,32 @@ header.scrolled {
     box-shadow: var(--shadow-lg);
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+}
+
+.hero-avatar-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.hero-avatar-img {
+    width: 150px;
+    height: 150px;
+    max-width: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 25px rgba(200, 146, 88, 0.45), 0 10px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    margin: 0 auto;
+    display: block;
+}
+
+.hero-avatar-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 35px rgba(200, 146, 88, 0.7), 0 14px 28px rgba(0, 0, 0, 0.35);
 }
 
 .hero-card h3 {
@@ -244,7 +294,7 @@ header.scrolled {
 }
 
 .hero-card .crp-subtitle {
-    color: #F3E5AB; /* Tom Creme/Dourado claro para excelente legibilidade sobre o verde */
+    color: #F3E5AB;
     font-weight: 700;
     font-size: 0.98rem;
     margin-bottom: 20px;
@@ -276,9 +326,7 @@ header.scrolled {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ==========================================================================
-   Section Common Layout
-   ========================================================================== */
+/* Section Common Layout */
 .section-header {
     text-align: center;
     max-width: 680px;
@@ -358,43 +406,83 @@ header.scrolled {
     font-weight: 700;
 }
 
-/* About Section */
+/* ==========================================================
+   Sobre o Psicólogo
+   ========================================================== */
 .about-section {
     padding: 90px 24px;
     max-width: 1120px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 52px;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
 }
 
-.about-box {
+/* Card principal: foto + texto, mesma altura */
+.about-card {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 48px;
+    align-items: stretch;
     background: var(--white);
-    padding: 44px 38px;
+    padding: 40px;
     border-radius: var(--radius);
     box-shadow: var(--shadow-md);
     border: 1px solid rgba(30, 77, 64, 0.08);
 }
 
-.about-box h3 {
-    color: var(--primary-dark);
-    font-size: 1.75rem;
-    margin-bottom: 18px;
-    font-weight: 800;
+.about-photo {
+    position: relative;
+    min-height: 440px;
 }
 
-.about-box p {
-    color: var(--text-dark);
+.about-photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    display: block;
+}
+
+.about-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.about-eyebrow {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.about-text h3 {
+    color: var(--primary-dark);
+    font-size: 1.85rem;
+    font-weight: 800;
+    line-height: 1.2;
     margin-bottom: 18px;
+}
+
+.about-text > p {
+    color: var(--text-dark);
     font-size: 1.02rem;
+    line-height: 1.7;
+    margin-bottom: 14px;
 }
 
 .about-highlight {
     background-color: var(--primary-light);
-    padding: 22px;
+    padding: 20px 24px;
     border-radius: 12px;
-    margin-top: 24px;
+    margin-top: 14px;
     border-left: 4px solid var(--accent);
 }
 
@@ -406,24 +494,85 @@ header.scrolled {
 }
 
 .about-highlight p {
-    font-size: 0.92rem;
+    font-size: 0.93rem;
+    line-height: 1.6;
     color: var(--text-muted);
-    margin-bottom: 0;
+    margin: 0;
 }
 
-.why-therapy-list {
-    padding-left: 20px;
+/* Card "Por que iniciar a terapia?" */
+.why-card {
+    background: var(--white);
+    padding: 36px 40px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(30, 77, 64, 0.08);
+}
+
+.why-card h3 {
+    color: var(--primary-dark);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.why-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px 36px;
+}
+
+.why-list li {
+    position: relative;
+    padding-left: 38px;
     color: var(--text-muted);
+    font-size: 0.98rem;
+    line-height: 1.55;
+}
+
+.why-list li::before {
+    content: "\2713";
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: 800;
     display: flex;
-    flex-direction: column;
-    gap: 14px;
+    align-items: center;
+    justify-content: center;
 }
 
-.why-therapy-list li {
-    font-size: 1rem;
+@media (max-width: 900px) {
+    .about-card {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 28px 20px;
+    }
+
+    .about-photo {
+        min-height: 0;
+        height: 360px;
+        max-width: 340px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .about-text h3 { font-size: 1.6rem; }
+
+    .why-card { padding: 28px 20px; }
+
+    .why-list { grid-template-columns: 1fr; }
 }
 
-/* FAQ Accordion Component */
+/* FAQ Accordion */
 .faq-section {
     padding: 90px 24px;
     background-color: var(--white);
@@ -492,7 +641,7 @@ header.scrolled {
     border-top: 1px solid var(--primary-light);
 }
 
-/* Photos Guide */
+/* Photos / Credentials Guide */
 .photos-guide {
     padding: 70px 24px;
     background-color: var(--primary-light);
@@ -579,6 +728,8 @@ header.scrolled {
 
 /* CTA Banner */
 .cta-banner {
+    width: 100%;
+    max-width: 100%;
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
     color: white;
     text-align: center;
@@ -587,7 +738,7 @@ header.scrolled {
 }
 
 .cta-banner h2 {
-    font-size: 2.3rem;
+    font-size: clamp(1.8rem, 4vw, 2.3rem);
     margin-bottom: 18px;
     font-weight: 800;
 }
@@ -601,6 +752,8 @@ header.scrolled {
 
 /* Footer */
 footer {
+    width: 100%;
+    max-width: 100%;
     background-color: #0E261F;
     color: rgba(255,255,255,0.75);
     padding: 44px 24px;
@@ -626,11 +779,7 @@ footer a {
     transform: translateY(0);
 }
 
-/* ==========================================================================
-   STYLISH MODERN BUTTONS
-   ========================================================================== */
-
-/* 1. Primary WhatsApp Button */
+/* BUTTONS */
 .btn-primary {
     position: relative;
     background: linear-gradient(135deg, #25D366 0%, #12A84C 100%);
@@ -651,6 +800,8 @@ footer a {
     overflow: hidden;
     z-index: 1;
     white-space: nowrap;
+    text-align: center;
+    max-width: 100%;
 }
 
 .btn-primary::before {
@@ -679,7 +830,6 @@ footer a {
     transform: translateY(-1px) scale(0.99);
 }
 
-/* 2. Header Action Button */
 .btn-header {
     position: relative;
     background: linear-gradient(135deg, #1E4D40 0%, #12332A 100%) !important;
@@ -706,7 +856,6 @@ footer a {
     box-shadow: 0 8px 22px rgba(37, 211, 102, 0.45) !important;
 }
 
-/* 3. Secondary Glass Outline Button */
 .btn-secondary {
     background-color: rgba(30, 77, 64, 0.04);
     color: var(--primary);
@@ -722,6 +871,8 @@ footer a {
     justify-content: center;
     backdrop-filter: blur(4px);
     white-space: nowrap;
+    text-align: center;
+    max-width: 100%;
 }
 
 .btn-secondary:hover {
@@ -731,9 +882,6 @@ footer a {
     box-shadow: 0 8px 20px rgba(30, 77, 64, 0.25);
 }
 
-/* ==========================================================================
-   Botões Flutuantes (WhatsApp & Voltar ao Topo)
-   ========================================================================== */
 .whatsapp-float {
     position: fixed;
     bottom: 24px;
@@ -795,7 +943,158 @@ footer a {
     transform: translateY(-3px);
 }
 
+/* Responsive & Touch */
+@media (max-width: 900px) {
+    .hero,
+    .about-section,
+    .modality-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding-top: 48px;
+        padding-bottom: 48px;
+    }
+
+    .hero-card,
+    .about-box,
+    .guide-container,
+    .modality-card {
+        padding: 28px 20px;
+    }
+
+    .mobile-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: var(--white);
+        flex-direction: column;
+        padding: 20px 24px 28px 24px;
+        box-shadow: 0 16px 32px rgba(18, 51, 42, 0.12);
+        gap: 16px;
+        border-bottom: 2px solid var(--primary-light);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+    }
+
+    .nav-links.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links a {
+        display: block;
+        padding: 10px 0;
+        font-size: 1.05rem;
+    }
+
+    .btn-header {
+        width: 100%;
+        padding: 14px 20px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .text-desktop {
+        display: none !important;
+    }
+
+    .text-mobile {
+        display: inline !important;
+    }
+}
+
 @media (max-width: 480px) {
+    .nav-container {
+        padding: 14px 16px;
+    }
+
+    .logo-text {
+        font-size: 1rem;
+    }
+
+    .crp-badge {
+        font-size: 0.68rem;
+        padding: 2px 8px;
+    }
+
+    .hero {
+        padding: 32px 16px;
+    }
+
+    .hero h1 {
+        font-size: 1.85rem;
+        line-height: 1.25;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 24px;
+    }
+
+    .hero-ctas {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 16px;
+        font-size: 0.95rem;
+    }
+
+    .services-section,
+    .about-section,
+    .faq-section,
+    .photos-guide,
+    .modality-section,
+    .cta-banner {
+        padding: 48px 16px;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .service-card {
+        padding: 24px 20px;
+    }
+
+    .faq-question {
+        padding: 18px 20px;
+        font-size: 1rem;
+    }
+
+    .faq-item.active .faq-answer {
+        padding: 14px 20px 20px 20px;
+    }
+
+    .cta-banner h2 {
+        font-size: 1.75rem;
+    }
+
+    .cta-banner p {
+        font-size: 1rem;
+    }
+
     .whatsapp-float {
         width: 52px;
         height: 52px;
@@ -803,54 +1102,12 @@ footer a {
         right: 16px;
         font-size: 1.4rem;
     }
+
     .back-to-top {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         bottom: 16px;
-        right: 78px;
+        right: 76px;
         font-size: 1rem;
-    }
-}
-
-/* ==========================================================================
-   Responsive Styles
-   ========================================================================== */
-@media (max-width: 768px) {
-    .hero, .about-section, .modality-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hero h1 {
-        font-size: 2.2rem;
-    }
-
-    .mobile-toggle {
-        display: flex;
-    }
-
-    .logo {
-        gap: 8px;
-    }
-
-    .crp-badge {
-        font-size: 0.72rem;
-        padding: 3px 8px;
-    }
-
-    .nav-links {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background-color: var(--white);
-        flex-direction: column;
-        padding: 24px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        gap: 16px;
-    }
-
-    .nav-links.active {
-        display: flex;
     }
 }
